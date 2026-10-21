@@ -1,27 +1,32 @@
-# Eclipse/STS (Fixes your permission errors)
-.metadata/
-.project
-.classpath
-.settings/
-.sts4-cache/
+# Application
+NODE_ENV=development
+PORT=5000
+APP_NAME=go-together-ride-sharing
 
-# Maven builds
-target/
-*.jar
-*.war
+# Frontend
+FRONTEND_URL=http://localhost:3000
 
-# Logs & Temp
-*.log
-logs/
+# Backend
+API_BASE_URL=http://localhost:5000
+JWT_SECRET=change_this_secret
+JWT_EXPIRES_IN=7d
 
-# IDE files
-.vscode/
-.idea/
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=gotogether
+DB_USER=postgres
+DB_PASSWORD=postgres
 
-# Secrets (SendGrid keys)
-application-local.yml
-application-dev.yml
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
 
-# OS files
-.DS_Store
-Thumbs.db
+# Email
+SMTP_HOST=smtp.mailtrap.io
+SMTP_PORT=2525
+SMTP_USER=
+SMTP_PASSWORD=
+
+# Logging
+LOG_LEVEL=debug
