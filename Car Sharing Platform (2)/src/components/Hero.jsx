@@ -88,10 +88,9 @@ export function Hero({ onNavigate }) {
           <img
             src={heroImage}
             alt="Go Together – Ride, Share, Save. Travel together, go further!"
-            className="gt-hero-image w-full h-[320px] sm:h-[440px] lg:h-[560px] object-cover object-[50%_42%]"
+            className="w-full h-[320px] sm:h-[440px] lg:h-[560px] object-cover object-[50%_42%]"
             fetchPriority="high"
           />
-          <div className="gt-hero-overlay" aria-hidden="true" />
         </div>
 
         {/* Search card overlapping the banner */}
