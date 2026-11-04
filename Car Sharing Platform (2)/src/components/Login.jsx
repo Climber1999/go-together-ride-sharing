@@ -40,7 +40,7 @@ export function Login({ onNavigate, onLoginSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen gt-sky-bg flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Back Button */}
         <button
@@ -55,10 +55,7 @@ export function Login({ onNavigate, onLoginSuccess }) {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           {/* Logo */}
           <div className="flex items-center justify-center gap-3 mb-8">
-            <div className="bg-blue-600 p-3 rounded-lg">
-              <Logo className="h-8 w-8 text-white" />
-            </div>
-            <span className="text-2xl">GoTogether</span>
+            <Logo variant="full" className="h-24 w-auto" />
           </div>
 
           {/* Header */}

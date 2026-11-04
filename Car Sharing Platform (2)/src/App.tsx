@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { HowItWorks } from './components/HowItWorks';
+import { Footer } from './components/Footer';
 import { TripCard } from './components/TripCard';
 import { FilterSection } from './components/FilterSection';
 import { BookingDialog } from './components/BookingDialog';
@@ -359,24 +361,24 @@ export default function App() {
 
   // Render home page
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navbar onNavigate={handleNavigate} user={user} onLogout={handleLogout} />
       <Hero onNavigate={handleNavigate} />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div id="rides" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 scroll-mt-20">
         {/* Section Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h2 className="text-3xl mb-2">Available Rides</h2>
-              <p className="text-gray-600">
+              <h2 className="text-3xl sm:text-4xl font-bold text-brand-navy mb-2">Available <span className="text-brand-orange">Rides</span></h2>
+              <p className="text-slate-500">
                 {filteredAndSortedTrips.length} ride{filteredAndSortedTrips.length !== 1 ? 's' : ''} available
               </p>
             </div>
             <Button
               variant="outline"
-              className="lg:hidden"
+              className="lg:hidden rounded-full border-brand-navy/20 text-brand-navy"
               onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
             >
               <SlidersHorizontal className="h-4 w-4 mr-2" />
@@ -386,17 +388,17 @@ export default function App() {
 
           {/* Sort Tabs */}
           <Tabs value={sortBy} onValueChange={(value) => setSortBy(value)}>
-            <TabsList>
-              <TabsTrigger value="departure">Earliest Departure</TabsTrigger>
-              <TabsTrigger value="price">Lowest Price</TabsTrigger>
-              <TabsTrigger value="duration">Shortest Duration</TabsTrigger>
+            <TabsList className="bg-white border border-brand-navy/10 rounded-full p-1 h-auto flex-wrap shadow-sm">
+              <TabsTrigger value="departure" className="rounded-full px-4 py-1.5 data-[state=active]:bg-brand-navy data-[state=active]:text-white">Earliest Departure</TabsTrigger>
+              <TabsTrigger value="price" className="rounded-full px-4 py-1.5 data-[state=active]:bg-brand-navy data-[state=active]:text-white">Lowest Price</TabsTrigger>
+              <TabsTrigger value="duration" className="rounded-full px-4 py-1.5 data-[state=active]:bg-brand-navy data-[state=active]:text-white">Shortest Duration</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters - Desktop */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:block lg:sticky lg:top-24 self-start">
             <FilterSection filters={filters} onFilterChange={setFilters} />
           </div>
 
@@ -412,15 +414,15 @@ export default function App() {
             {loadingTrips ? (
               <div className="text-center py-12">
                 <div className="inline-flex items-center gap-2 mb-4">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  <span className="text-gray-600">Loading available rides...</span>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-orange"></div>
+                  <span className="text-slate-500">Loading available rides...</span>
                 </div>
               </div>
             ) : filteredAndSortedTrips.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-600 text-lg mb-4">
-                  No rides match your filters
-                </p>
+              <div className="gt-card text-center py-14 px-6">
+                <div className="text-5xl mb-3">🚗</div>
+                <p className="text-brand-navy font-display font-semibold text-xl mb-1">No rides found</p>
+                <p className="text-slate-500 mb-5">Try changing your filters or search another route.</p>
                 <Button
                   variant="outline"
                   onClick={() =>
@@ -449,6 +451,9 @@ export default function App() {
           </div>
         </div>
       </div>
+
+      <HowItWorks onNavigate={handleNavigate} />
+      <Footer />
 
       {/* Booking Dialog */}
       <BookingDialog

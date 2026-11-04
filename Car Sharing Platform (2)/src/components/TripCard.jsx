@@ -5,7 +5,6 @@ import { Badge } from './ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 
 export function TripCard({ trip, onBook, onViewProfile }) {
-  console.log('Rendering TripCard for trip:', trip) 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
@@ -13,7 +12,7 @@ export function TripCard({ trip, onBook, onViewProfile }) {
 
   return (
     
-    <Card className="hover:shadow-lg transition-shadow">
+    <Card className="gt-card gt-card-hover border-0 overflow-hidden">
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Left Section - Trip Info */}
@@ -21,26 +20,26 @@ export function TripCard({ trip, onBook, onViewProfile }) {
             {/* Route */}
             <div className="flex items-start gap-3 mb-4">
               <div className="flex flex-col items-center gap-1 mt-1">
-                <div className="w-3 h-3 rounded-full bg-blue-600"></div>
-                <div className="w-0.5 h-8 bg-gray-300"></div>
-                <Navigation className="h-4 w-4 text-blue-600" />
+                <div className="w-3 h-3 rounded-full bg-brand-blue ring-4 ring-brand-blue/15"></div>
+                <div className="w-0.5 h-8 bg-gradient-to-b from-brand-blue to-brand-orange rounded-full"></div>
+                <Navigation className="h-4 w-4 text-brand-orange" />
               </div>
               <div className="flex-1">
                 <div className="mb-3">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-sm text-gray-600">{trip.departureTime}</span>
-                    <span className="text-gray-900">{trip.origin}</span>
+                    <span className="text-sm font-semibold text-brand-navy tabular-nums">{trip.departureTime}</span>
+                    <span className="text-slate-800 font-medium">{trip.origin}</span>
                   </div>
                 </div>
                 <div>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-sm text-gray-600">{trip.arrivalTime}</span>
-                    <span className="text-gray-900">{trip.destination}</span>
+                    <span className="text-sm font-semibold text-brand-navy tabular-nums">{trip.arrivalTime}</span>
+                    <span className="text-slate-800 font-medium">{trip.destination}</span>
                   </div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-gray-600 mb-1">{formatDate(trip.date)}</div>
+                <div className="text-sm font-medium text-brand-navy mb-1 rounded-full bg-brand-sky px-3 py-1 inline-block">{formatDate(trip.date)}</div>
                 <div className="text-sm text-gray-500 flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {trip.duration}
@@ -54,15 +53,15 @@ export function TripCard({ trip, onBook, onViewProfile }) {
                 onClick={() => onViewProfile && onViewProfile(trip.driver.id)}
                 className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer flex-1"
               >
-                <Avatar className="h-12 w-12">
+                <Avatar className="h-12 w-12 ring-2 ring-brand-blue/20">
                   <AvatarImage src={trip.driver.avatar} alt={trip.driver.name} />
                   <AvatarFallback>{trip.driver.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="hover:text-blue-600 transition-colors">{trip.driver.name}</span>
+                    <span className="font-semibold text-slate-800 hover:text-brand-blue transition-colors">{trip.driver.name}</span>
                     {trip.driver.verified && (
-                      <BadgeCheck className="h-4 w-4 text-blue-600" />
+                      <BadgeCheck className="h-4 w-4 text-brand-blue" />
                     )}
                   </div>
                   <div className="flex items-center gap-1 text-sm">
@@ -81,7 +80,7 @@ export function TripCard({ trip, onBook, onViewProfile }) {
               </div>
               <div className="flex flex-wrap gap-2">
                 {trip.amenities.map((amenity) => (
-                  <Badge key={amenity} variant="secondary" className="text-xs">
+                  <Badge key={amenity} variant="secondary" className="text-xs bg-brand-sky text-brand-navy border-0">
                     {amenity}
                   </Badge>
                 ))}
@@ -107,10 +106,10 @@ export function TripCard({ trip, onBook, onViewProfile }) {
           {/* Right Section - Booking */}
           <div className="md:w-48 flex flex-col items-end justify-between">
             <div className="text-right mb-4">
-              <div className="text-3xl text-blue-600 mb-1">
+              <div className="font-display text-4xl font-bold text-brand-navy mb-1">
                 ${trip.pricePerSeat}
               </div>
-              <div className="text-sm text-gray-600">per person</div>
+              <div className="text-sm text-slate-500">per person</div>
             </div>
 
             <div className="w-full space-y-3">
@@ -119,7 +118,7 @@ export function TripCard({ trip, onBook, onViewProfile }) {
                 <span>{trip.availableSeats} seat{trip.availableSeats !== 1 ? 's' : ''} left</span>
               </div>
               <Button
-                className="w-full"
+                className="w-full rounded-full gt-btn-orange disabled:shadow-none disabled:bg-slate-300 disabled:bg-none"
                 onClick={() => onBook(trip)}
                 disabled={trip.availableSeats === 0}
               >

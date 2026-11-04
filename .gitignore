@@ -1,27 +1,34 @@
-# Eclipse/STS (Fixes your permission errors)
-.metadata/
-.project
-.classpath
-.settings/
-.sts4-cache/
+# Dependencies
+node_modules/
 
-# Maven builds
-target/
-*.jar
-*.war
+# Environment and secrets
+.env
+.env.*
+!.env.example
 
-# Logs & Temp
+# Logs
 *.log
-logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# IDE files
-.vscode/
+# Vite and other tool caches
+.vite/
+.cache/
+
+# Java and Maven/Gradle build output
+target/
+build/
+.gradle/
+
+# IDE and editor files
 .idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.iml
 
-# Secrets (SendGrid keys)
-application-local.yml
-application-dev.yml
-
-# OS files
+# Operating-system files
 .DS_Store
 Thumbs.db
