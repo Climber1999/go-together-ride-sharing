@@ -1,8 +1,7 @@
-import { Search, MapPin, Calendar } from 'lucide-react';
+import { Search, MapPin, Calendar, ShieldCheck, Leaf, Wallet } from 'lucide-react';
+import heroImage from '../assets/hero.jpg';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { useState } from 'react';
-import heroImage from '../images/Go Together City Ride.png';
 
 export function Hero({ onNavigate }) {
   const [leaving, setLeaving] = useState('');
@@ -60,153 +59,155 @@ export function Hero({ onNavigate }) {
     });
   };
 
+  const fieldCls =
+    'flex items-center h-14 pl-4 bg-white border border-slate-200 rounded-xl transition focus-within:border-brand-blue focus-within:ring-4 focus-within:ring-brand-blue/15';
+  const inputCls =
+    'flex-1 h-full min-w-0 px-0 border-none bg-transparent text-[15px] text-slate-800 placeholder:text-slate-400 focus:outline-none';
+  const labelCls = 'block text-xs font-semibold uppercase tracking-wide text-brand-navy/70 mb-1.5 pl-1';
+
+  const Suggestions = ({ items, onPick }) => (
+    <div className="absolute left-0 top-full mt-2 z-50 w-full bg-white border border-brand-blue/20 rounded-xl shadow-xl max-h-60 overflow-auto">
+      {items.map((s, i) => (
+        <div
+          key={i}
+          className="px-4 py-2.5 cursor-pointer text-sm flex justify-between gap-3 border-b border-slate-100 last:border-b-0 text-brand-navy hover:bg-brand-sky"
+          onMouseDown={() => onPick(s)}
+        >
+          <span className="truncate">{s.placeName}</span>
+          <span className="text-slate-400 shrink-0">{s.state}</span>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
+    <section className="gt-sky-bg relative overflow-hidden pt-8 sm:pt-10 pb-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-[28px] mb-12 shadow-2xl">
+        {/* Brand banner */}
+        <div className="relative rounded-[28px] overflow-hidden shadow-[0_30px_70px_-30px_rgba(20,40,107,.45)] ring-1 ring-brand-navy/10">
           <img
             src={heroImage}
-            alt="Go Together – Travel together, go further"
-            className="hero-image w-full h-[320px] sm:h-[440px] object-cover"
+            alt="Go Together – Ride, Share, Save. Travel together, go further!"
+            className="gt-hero-image w-full h-[320px] sm:h-[440px] lg:h-[560px] object-cover object-[50%_42%]"
+            fetchPriority="high"
           />
-          <div className="hero-overlay" aria-hidden="true" />
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
-            <h1 className="text-4xl sm:text-5xl mb-4 text-white drop-shadow-lg">
-              Travel Together, Save Together
-            </h1>
-            <p className="text-lg sm:text-xl text-white/90 max-w-2xl drop-shadow-md">
-              Share rides with verified drivers going your way. Safe, affordable, and eco-friendly travel.
-            </p>
-          </div>
+          <div className="gt-hero-overlay" aria-hidden="true" />
         </div>
 
-        {/* Search Card */}
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            {/* Leaving from */}
-            <div className="relative">
-  {/* Input + Icon */}
-  <div className="flex items-center h-11 pl-3 bg-white border border-gray-200 rounded-lg focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
-    <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0 mr-2" />
-    <input
-      value={leaving}
-      onChange={e => {
-        setLeaving(e.target.value);
-        fetchSuggestions(e.target.value, setLeavingSuggestions);
-        setShowLeavingDropdown(true);
-        setSelectedLeaving(null);
-      }}
-      onBlur={() => setTimeout(() => setShowLeavingDropdown(false), 200)}
-      onFocus={() => leavingSuggestions.length > 0 && setShowLeavingDropdown(true)}
-      placeholder="Leaving from..."
-      className="flex-1 h-full px-0 border-none bg-transparent text-sm focus-visible:ring-0 focus-visible:outline-none"
-      autoComplete="off"
-    />
-  </div>
-
-  {/* Dropdown */}
-  {showLeavingDropdown && leavingSuggestions.length > 0 && (
-    <div
-      className="absolute left-0 top-full mt-1 z-50 w-full bg-white border border-sky-300 rounded-lg shadow-lg max-h-60 overflow-auto"
-      style={{backgroundColor: '#fff'}}
-    >
-      {leavingSuggestions.map((s, i) => (
-        <div
-          key={i}
-          className="px-4 py-2 cursor-pointer text-sm flex justify-between border-b border-gray-100 last:border-b-0 text-sky-900 bg-white hover:bg-sky-100"
-          style={{backgroundColor: '#fff'}}
-          onMouseDown={() => {
-            setLeaving(s.placeName);
-            setSelectedLeaving(s);
-            setShowLeavingDropdown(false);
-          }}
-        >
-          <span>{s.placeName}</span>
-          <span className="text-gray-400 ml-2">{s.state}</span>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
-            {/* Going to */}
-            <div className="relative">
-  {/* Input + Icon */}
-  <div className="flex items-center h-11 pl-3 bg-white border border-gray-200 rounded-lg focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
-    <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0 mr-2" />
-    <input
-      value={going}
-      onChange={e => {
-        setGoing(e.target.value);
-        fetchSuggestions(e.target.value, setGoingSuggestions);
-        setShowGoingDropdown(true);
-        setSelectedGoing(null);
-      }}
-      onBlur={() => setTimeout(() => setShowGoingDropdown(false), 200)}
-      onFocus={() => goingSuggestions.length > 0 && setShowGoingDropdown(true)}
-      placeholder="Going to..."
-      className="flex-1 h-full px-0 border-none bg-transparent text-sm focus-visible:ring-0 focus-visible:outline-none"
-      autoComplete="off"
-    />
-  </div>
-
-  {/* Dropdown */}
-  {showGoingDropdown && goingSuggestions.length > 0 && (
-    <div
-      className="absolute left-0 top-full mt-1 z-50 w-full bg-white border border-sky-300 rounded-lg shadow-lg max-h-60 overflow-auto"
-      style={{backgroundColor: '#fff'}}
-    >
-      {goingSuggestions.map((s, i) => (
-        <div
-          key={i}
-          className="px-4 py-2 cursor-pointer text-sm flex justify-between border-b border-gray-100 last:border-b-0 text-sky-900 bg-white hover:bg-sky-100"
-          style={{backgroundColor: '#fff'}}
-          onMouseDown={() => {
-            setGoing(s.placeName);
-            setSelectedGoing(s);
-            setShowGoingDropdown(false);
-          }}
-        >
-          <span>{s.placeName}</span>
-          <span className="text-gray-400 ml-2">{s.state}</span>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
-            {/* Date */}
-            <div className="flex items-center h-11 pl-3 bg-white border border-gray-200 rounded-lg focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
-              <Calendar className="h-5 w-5 text-gray-400 flex-shrink-0 mr-2" />
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                placeholder="When?"
-                className="flex-1 h-full px-0 border-none bg-transparent text-sm focus-visible:ring-0 focus-visible:outline-none"
-              />
+        {/* Search card overlapping the banner */}
+        <div className="relative z-10 -mt-6 sm:-mt-8 mx-auto max-w-5xl gt-card p-5 sm:p-7 shadow-[0_30px_60px_-25px_rgba(20,40,107,.45)]">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-brand-navy">
+                Where are you <span className="text-brand-orange">going</span> today?
+              </h1>
+              <p className="text-sm text-slate-500 mt-0.5">Find a ride that fits your route, time and budget.</p>
             </div>
           </div>
-          <Button className="w-full" size="lg" onClick={handleSearch}>
-            <Search className="h-5 w-5 mr-2" />
-            Search Rides
-          </Button>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            {/* Leaving from */}
+            <div className="relative md:col-span-3">
+              <label className={labelCls}>Leaving from</label>
+              <div className={fieldCls}>
+                <MapPin className="h-5 w-5 text-brand-blue flex-shrink-0 mr-3" />
+                <input
+                  value={leaving}
+                  onChange={(e) => {
+                    setLeaving(e.target.value);
+                    fetchSuggestions(e.target.value, setLeavingSuggestions);
+                    setShowLeavingDropdown(true);
+                    setSelectedLeaving(null);
+                  }}
+                  onBlur={() => setTimeout(() => setShowLeavingDropdown(false), 200)}
+                  onFocus={() => leavingSuggestions.length > 0 && setShowLeavingDropdown(true)}
+                  placeholder="City, town or address"
+                  className={inputCls}
+                  autoComplete="off"
+                />
+              </div>
+              {showLeavingDropdown && leavingSuggestions.length > 0 && (
+                <Suggestions
+                  items={leavingSuggestions}
+                  onPick={(s) => {
+                    setLeaving(s.placeName);
+                    setSelectedLeaving(s);
+                    setShowLeavingDropdown(false);
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Going to */}
+            <div className="relative md:col-span-3">
+              <label className={labelCls}>Going to</label>
+              <div className={fieldCls}>
+                <MapPin className="h-5 w-5 text-brand-orange flex-shrink-0 mr-3" />
+                <input
+                  value={going}
+                  onChange={(e) => {
+                    setGoing(e.target.value);
+                    fetchSuggestions(e.target.value, setGoingSuggestions);
+                    setShowGoingDropdown(true);
+                    setSelectedGoing(null);
+                  }}
+                  onBlur={() => setTimeout(() => setShowGoingDropdown(false), 200)}
+                  onFocus={() => goingSuggestions.length > 0 && setShowGoingDropdown(true)}
+                  placeholder="City, town or address"
+                  className={inputCls}
+                  autoComplete="off"
+                />
+              </div>
+              {showGoingDropdown && goingSuggestions.length > 0 && (
+                <Suggestions
+                  items={goingSuggestions}
+                  onPick={(s) => {
+                    setGoing(s.placeName);
+                    setSelectedGoing(s);
+                    setShowGoingDropdown(false);
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Date */}
+            <div className="md:col-span-3">
+              <label className={labelCls}>Date</label>
+              <div className={fieldCls + ' pr-3'}>
+                <Calendar className="h-5 w-5 text-brand-blue flex-shrink-0 mr-3" />
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
+              </div>
+            </div>
+
+            {/* Search */}
+            <div className="md:col-span-3">
+              <Button className="gt-btn-orange w-full h-14 rounded-xl text-base" size="lg" onClick={handleSearch}>
+                <Search className="h-5 w-5" />
+                Search
+              </Button>
+            </div>
+          </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-4xl mx-auto">
-          <div className="text-center">
-            <div className="text-4xl mb-2 text-blue-600">2M+</div>
-            <div className="text-gray-600">Trusted Drivers</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl mb-2 text-blue-600">50+</div>
-            <div className="text-gray-600">Countries</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl mb-2 text-blue-600">30M+</div>
-            <div className="text-gray-600">Rides Shared</div>
-          </div>
+        {/* Value props */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10 max-w-5xl mx-auto">
+          {[
+            { icon: Wallet, title: 'Save', text: 'Split fuel costs and travel for far less.', color: 'text-brand-orange bg-orange-50' },
+            { icon: ShieldCheck, title: 'Ride safe', text: 'Verified drivers and rated community.', color: 'text-brand-blue bg-blue-50' },
+            { icon: Leaf, title: 'Go green', text: 'Fewer cars on the road, lower emissions.', color: 'text-emerald-600 bg-emerald-50' },
+          ].map(({ icon: Icon, title, text, color }) => (
+            <div key={title} className="flex items-center gap-4 px-2">
+              <span className={`h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 ${color}`}>
+                <Icon className="h-6 w-6" />
+              </span>
+              <div>
+                <div className="font-display font-semibold text-brand-navy">{title}</div>
+                <div className="text-sm text-slate-500">{text}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

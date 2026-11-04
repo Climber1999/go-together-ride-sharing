@@ -5,9 +5,9 @@ import { Switch } from './ui/switch';
 
 export function FilterSection({ filters, onFilterChange }) {
   return (
-    <Card>
+    <Card className="gt-card border-0">
       <CardHeader>
-        <CardTitle>Filters</CardTitle>
+        <CardTitle className="font-display text-brand-navy">Filters</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Price Range */}
