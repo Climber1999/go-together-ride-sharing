@@ -2,6 +2,7 @@ import { Search, MapPin, Calendar } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useState } from 'react';
+import heroImage from '../images/Go Together City Ride.png';
 
 export function Hero({ onNavigate }) {
   const [leaving, setLeaving] = useState('');
@@ -62,13 +63,21 @@ export function Hero({ onNavigate }) {
   return (
     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl mb-4 text-gray-900">
-            Travel Together, Save Together
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Share rides with verified drivers going your way. Safe, affordable, and eco-friendly travel.
-          </p>
+        <div className="relative overflow-hidden rounded-[28px] mb-12 shadow-2xl">
+          <img
+            src={heroImage}
+            alt="Go Together – Travel together, go further"
+            className="hero-image w-full h-[320px] sm:h-[440px] object-cover"
+          />
+          <div className="hero-overlay" aria-hidden="true" />
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
+            <h1 className="text-4xl sm:text-5xl mb-4 text-white drop-shadow-lg">
+              Travel Together, Save Together
+            </h1>
+            <p className="text-lg sm:text-xl text-white/90 max-w-2xl drop-shadow-md">
+              Share rides with verified drivers going your way. Safe, affordable, and eco-friendly travel.
+            </p>
+          </div>
         </div>
 
         {/* Search Card */}
