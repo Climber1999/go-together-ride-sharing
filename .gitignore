@@ -1,32 +1,34 @@
-# Application
-NODE_ENV=development
-PORT=5000
-APP_NAME=go-together-ride-sharing
+# Dependencies
+node_modules/
 
-# Frontend
-FRONTEND_URL=http://localhost:3000
+# Environment and secrets
+.env
+.env.*
+!.env.example
 
-# Backend
-API_BASE_URL=http://localhost:5000
-JWT_SECRET=change_this_secret
-JWT_EXPIRES_IN=7d
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=gotogether
-DB_USER=postgres
-DB_PASSWORD=postgres
+# Vite and other tool caches
+.vite/
+.cache/
 
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
+# Java and Maven/Gradle build output
+target/
+build/
+.gradle/
 
-# Email
-SMTP_HOST=smtp.mailtrap.io
-SMTP_PORT=2525
-SMTP_USER=
-SMTP_PASSWORD=
+# IDE and editor files
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.iml
 
-# Logging
-LOG_LEVEL=debug
+# Operating-system files
+.DS_Store
+Thumbs.db
