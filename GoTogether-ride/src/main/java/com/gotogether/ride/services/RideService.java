@@ -26,6 +26,7 @@ public interface RideService {
     String checkRideStatus(Long rideId);
 
 	List<RideResponseDTO> getallRides();
+    void removeRide(Long rideId);
 
     // Decrement available seats by `seats` when a booking is created (seats > 0)
     ApiResponse updateSeatsAfterBooking(Long rideId, int seats);

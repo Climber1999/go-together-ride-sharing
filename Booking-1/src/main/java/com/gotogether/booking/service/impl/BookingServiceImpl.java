@@ -3,17 +3,22 @@ package com.gotogether.booking.service.impl;
 import com.gotogether.booking.dto.*;
 import com.gotogether.booking.Entity.Booking;
 import com.gotogether.booking.Entity.BookingStatus;
+import com.gotogether.booking.client.RideClient;
+import com.gotogether.booking.client.UserClient;
 import com.gotogether.booking.exception.ResourceNotFoundException;
 import com.gotogether.booking.repository.BookingRepository;
 import com.gotogether.booking.service.BookingService;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.math.BigDecimal;
 
@@ -22,6 +27,8 @@ import java.math.BigDecimal;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
+    private final RideClient rideClient;
+    private final UserClient userClient;
 
     @Override
     public BookingResponseDTO createBooking(BookingRequestDTO request) {
@@ -113,8 +120,15 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponseDTO confirmBooking(Long id) {
+    public BookingResponseDTO confirmBooking(Long id, Long callerUserId, boolean admin) {
         Booking b = bookingRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
+        RideSummaryDTO ride = rideClient.getRide(b.getRideId());
+        if (!admin && !callerUserId.equals(ride.getDriverId())) {
+            throw new AccessDeniedException("Only the ride driver can approve this booking");
+        }
+        if (b.getStatus() != BookingStatus.PENDING) {
+            throw new IllegalStateException("Only pending bookings can be approved");
+        }
         b.setStatus(BookingStatus.CONFIRMED);
         Booking saved = bookingRepository.save(b);
         return toResponse(saved);
@@ -175,6 +189,47 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         return getAllBookings();
+    }
+
+    @Override
+    public List<RidePassengerDTO> getRidePassengers(Long rideId, Long callerUserId, boolean admin) {
+        RideSummaryDTO ride = rideClient.getRide(rideId);
+        if (!admin && !callerUserId.equals(ride.getDriverId())) {
+            throw new AccessDeniedException("Only the ride driver can view its passengers");
+        }
+
+        List<Booking> bookings = bookingRepository.findByRideId(rideId);
+        if (bookings.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> passengerIds = bookings.stream()
+                .map(Booking::getPassengerId)
+                .distinct()
+                .toList();
+        Map<Long, PassengerSummaryDTO> passengersById = userClient.getPassengerSummaries(passengerIds)
+                .stream()
+                .collect(Collectors.toMap(PassengerSummaryDTO::getId, Function.identity()));
+
+        return bookings.stream()
+                .map(booking -> {
+                    PassengerSummaryDTO passenger = passengersById.get(booking.getPassengerId());
+                    return RidePassengerDTO.builder()
+                            .bookingId(booking.getId())
+                            .passengerId(booking.getPassengerId())
+                            .passengerName(passenger == null ? null : passenger.getUsername())
+                            .passengerImageUrl(passenger == null ? null : passenger.getImageUrl())
+                            .passengerImageBase64(passenger == null ? null : passenger.getImageBase64())
+                            .passengerSeats(booking.getPassengerSeats())
+                            .pickupPoint(booking.getPickupPoint())
+                            .dropoffPoint(booking.getDropoffPoint())
+                            .totalAmount(booking.getTotalAmount())
+                            .status(booking.getStatus())
+                            .bookedAt(booking.getBookedAt())
+                            .rideDate(booking.getRideDate())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     private BookingResponseDTO toResponse(Booking b) {

@@ -27,8 +27,14 @@ public class CorsPreflightFilter implements GlobalFilter, Ordered {
     private static final Set<String> ALLOWED_ORIGINS = Set.of(
         "http://localhost:3000",
         "http://localhost:3001",
+        "http://localhost:3002",
+        "http://localhost:5173",
+        "http://127.0.0.1:3002",
         "http://localhost:3000/",
-        "http://localhost:3001/"
+        "http://localhost:3001/",
+        "http://localhost:3002/",
+        "http://localhost:5173/",
+        "http://127.0.0.1:3002/"
     );
 
     private static final String ALLOWED_METHODS = "GET,POST,PUT,DELETE,OPTIONS,PATCH";
@@ -46,12 +52,16 @@ public class CorsPreflightFilter implements GlobalFilter, Ordered {
             return handlePreflightRequest(response, origin);
         }
 
-        // For non-OPTIONS requests, add CORS headers and continue
+        // Normalize CORS headers when the response is committed, including responses
+        // from filters that stop the chain before CorsResponseFilter can run.
         if (origin != null && isAllowedOrigin(origin)) {
-            HttpHeaders headers = response.getHeaders();
-            headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-            headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
-            headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Type,Authorization");
+            response.beforeCommit(() -> {
+                HttpHeaders headers = response.getHeaders();
+                headers.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+                headers.set(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+                headers.set(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Type,Authorization");
+                return Mono.empty();
+            });
         }
 
         return chain.filter(exchange);

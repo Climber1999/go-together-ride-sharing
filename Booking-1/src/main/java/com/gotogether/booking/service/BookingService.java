@@ -14,7 +14,7 @@ public interface BookingService {
     void bulkDelete(List<Long> ids);
     List<BookingResponseDTO> searchBookings(String q);
     BookingResponseDTO cancelBooking(Long id, String reason);
-    BookingResponseDTO confirmBooking(Long id);
+    BookingResponseDTO confirmBooking(Long id, Long callerUserId, boolean admin);
     BookingResponseDTO checkIn(Long id);
     BookingResponseDTO checkOut(Long id);
     void bulkUpdateStatus(BulkStatusUpdateDTO dto);
@@ -23,4 +23,5 @@ public interface BookingService {
     // Added convenience methods
     List<BookingResponseDTO> getBookingsByPassenger(Long passengerId);
     List<BookingResponseDTO> getBookingsByStatus(String status);
+    List<RidePassengerDTO> getRidePassengers(Long rideId, Long callerUserId, boolean admin);
 }

@@ -42,6 +42,8 @@ The platform is built using a **Distributed Microservices Architecture**, ensuri
 
 ## ⚙️ Getting Started
 
+For the development, staging, and production GitHub Actions pipeline targeting Amazon ECR and ECS, see [AWS_DEPLOYMENT.md](AWS_DEPLOYMENT.md). The pipeline deploys to existing ECS services; AWS infrastructure must be provisioned separately.
+
 ### Prerequisites
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Recommended)
 - [Java 21 JDK](https://adoptium.net/temurin/releases/?version=21)

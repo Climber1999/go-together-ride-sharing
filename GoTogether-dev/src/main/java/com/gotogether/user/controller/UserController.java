@@ -38,6 +38,17 @@ public class UserController {
         AuthTokenResponseDTO authToken = userService.authenticateUser(loginRequestDTO);
         return ResponseEntity.ok(authToken);
     }
+
+    @GetMapping("/admin/users")
+    public ResponseEntity<List<UserResponseDTO>> getUsersForAdmin() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @PatchMapping("/admin/users/{userId}/deactivate")
+    public ResponseEntity<?> deactivateUser(@PathVariable Long userId) {
+        userService.deactivateUser(userId);
+        return ResponseEntity.noContent().build();
+    }
     
     // 6.1 REFRESH ACCESS TOKEN
     @PostMapping("/refresh-token")
@@ -81,6 +92,7 @@ public class UserController {
             if (user == null) return ResponseEntity.notFound().build();
             UserCompactDTO compact = new UserCompactDTO();
             compact.setId(user.getId());
+            compact.setUsername(user.getFirstName() + " " + user.getLastName());
             // Prefer S3 URL if available
             if (user.getImageUrl() != null) {
                 compact.setImageUrl(user.getImageUrl());
@@ -107,6 +119,7 @@ public class UserController {
                 if (user == null) continue; // skip missing
                 UserCompactDTO compact = new UserCompactDTO();
                 compact.setId(user.getId());
+                compact.setUsername(user.getFirstName() + " " + user.getLastName());
                 // Prefer S3 URL if available
                 if (user.getImageUrl() != null) {
                     compact.setImageUrl(user.getImageUrl());

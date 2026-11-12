@@ -57,6 +57,8 @@ public class User extends BaseEntity {
 	private boolean emailVerified = false;
 	@Column(name = "phone_verified", nullable = false)
 	private boolean phoneVerified = false; 	
+	@Column(nullable = false, columnDefinition = "boolean default true")
+	private boolean active = true;
 
 	public User(String firstName, String lastName, String email, String password, String confirmPassword,
 			String phoneNo, UserRole role, byte[] image) {

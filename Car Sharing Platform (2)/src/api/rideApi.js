@@ -1,7 +1,8 @@
 // API calls for Ride endpoints
 import axios from 'axios';
+import { API_BASE_URL } from './baseUrl';
 
-const BASE_URL =  'http://localhost:9090';
+const BASE_URL = API_BASE_URL;
 const RIDE_API = `${BASE_URL}/gotogether/rides`;
 
 // Helper function to get authorization headers with bearer token

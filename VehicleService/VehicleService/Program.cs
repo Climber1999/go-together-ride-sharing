@@ -42,6 +42,11 @@ namespace VehicleService
             app.UseCors("AllowAll");
             app.UseAuthorization();
             
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<VehicleDbContext>();
+                dbContext.Database.Migrate();
+            }
 
             app.MapControllers();
 

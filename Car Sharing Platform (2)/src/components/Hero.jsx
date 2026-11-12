@@ -2,6 +2,7 @@ import { Search, MapPin, Calendar } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useState } from 'react';
+import { API_BASE_URL } from '../api/baseUrl';
 
 export function Hero({ onNavigate }) {
   const [leaving, setLeaving] = useState('');
@@ -21,7 +22,7 @@ export function Hero({ onNavigate }) {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:9090/api/places?address=${encodeURIComponent(query)}`);
+      const res = await fetch(`${API_BASE_URL}/api/places?address=${encodeURIComponent(query)}`);
       if (!res.ok) throw new Error('Failed to fetch suggestions');
       const data = await res.json();
       if (Array.isArray(data)) {

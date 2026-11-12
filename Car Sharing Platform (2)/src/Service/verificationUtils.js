@@ -4,7 +4,7 @@
  * Frontend just calls API endpoints
  */
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/gotogether';
+const API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090'}/gotogether`;
 
 /**
  * Send Phone OTP - Generates OTP and sends via Twilio SMS

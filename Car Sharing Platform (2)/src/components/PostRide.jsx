@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE_URL } from '../api/baseUrl';
 import { ArrowLeft, MapPin, Calendar, Clock, Users, DollarSign, Car as CarIcon, Plus, X, Music, Cigarette, Dog, MessageCircle, Wifi, Phone, Wind, Shield, AlertCircle, Info, Mail } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -96,7 +97,7 @@ export function PostRide({ onNavigate, user, onRidePosted }) {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:8080/api/places?address=${encodeURIComponent(query)}`);
+      const res = await fetch(`${API_BASE_URL}/api/places?address=${encodeURIComponent(query)}`);
       if (!res.ok) throw new Error('Failed to fetch suggestions');
       const data = await res.json();
       if (Array.isArray(data)) {

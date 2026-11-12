@@ -23,5 +23,6 @@ public class UserResponseDTO {
     private String imageUrl; // new: S3 url
     private boolean emailVerified;
     private boolean phoneVerified;
+    private boolean active;
 
 }

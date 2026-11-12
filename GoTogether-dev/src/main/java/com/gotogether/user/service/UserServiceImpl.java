@@ -53,6 +53,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
     public RegistrationResponseDTO registerNewAccount(RegisterationRequestDTO dto) {
+        if (dto.getRole() == null || dto.getRole() == UserRole.ADMIN) {
+            throw new IllegalArgumentException("Only passenger or driver accounts can be registered");
+        }
         if(userRepository.existsByEmail(dto.getEmail()) && dto.getEmail() != null) {
             throw new ResourceNotFoundException("Email already exists");
         }
@@ -159,6 +162,10 @@ public class UserServiceImpl implements UserService {
     public AuthTokenResponseDTO authenticateUser(LoginRequestDTO loginRequestDTO) {
         User user = userRepository.findByEmail(loginRequestDTO.getEmail())
             .orElseThrow(() -> new ResourceNotFoundException("Invalid email or password"));
+
+        if (!user.isActive()) {
+            throw new ResourceNotFoundException("This account has been deactivated");
+        }
         
         // Use PasswordEncoder to compare encrypted password with plain text input
         if (!passwordEncoder.matches(loginRequestDTO.getPassword(), user.getPassword())) {
@@ -213,6 +220,9 @@ public class UserServiceImpl implements UserService {
         // Get user details
         User user = userRepository.findById(refreshToken.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (!user.isActive()) {
+            throw new RefreshTokenException("This account has been deactivated");
+        }
         
         // Generate new access token
         String newAccessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getEmail(), user.getRole().toString());
@@ -254,11 +264,11 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public void revokeAllRefreshTokensForUser(Long userId) {
-        // Find all active refresh tokens for user and revoke them
-        refreshTokenRepository.findByUserId(userId).ifPresent(token -> {
+        List<RefreshToken> tokens = refreshTokenRepository.findAllByUserId(userId);
+        tokens.forEach(token -> {
             token.setRevoked(true);
-            refreshTokenRepository.save(token);
         });
+        refreshTokenRepository.saveAll(tokens);
     }
 
     @Override
@@ -342,6 +352,18 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(user -> mapper.map(user, UserResponseDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deactivateUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        if (!user.isActive()) {
+            return;
+        }
+        user.setActive(false);
+        userRepository.save(user);
+        revokeAllRefreshTokensForUser(userId);
     }
 
     // --- Helper Methods ---

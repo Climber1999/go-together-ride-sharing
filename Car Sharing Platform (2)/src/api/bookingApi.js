@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from './baseUrl';
 
-const BOOKING_API = 'http://localhost:9090/gotogether/bookings';
+const BOOKING_API = `${API_BASE_URL}/gotogether/bookings`;
 
 // Helper function to get authorization headers with bearer token
 const getAuthHeaders = () => {

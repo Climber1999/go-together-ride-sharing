@@ -41,6 +41,7 @@ public interface UserService {
 
     // Return all registered users as DTOs
     List<UserResponseDTO> getAllUsers();
+    void deactivateUser(Long userId);
 }
 
 

@@ -3,6 +3,8 @@ package com.gotogether.ride.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,9 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.ride.client.UserFeignClient;
 import com.gotogether.ride.dto.ApiResponse;
+import com.gotogether.ride.dto.NaturalLanguageRideSearchRequest;
+import com.gotogether.ride.dto.NaturalLanguageRideSearchResponse;
 import com.gotogether.ride.dto.RideRequestDTO;
 import com.gotogether.ride.dto.RideResponseDTO;
 import com.gotogether.ride.services.RideService;
+import com.gotogether.ride.services.RideSearchAssistant;
 
 import lombok.AllArgsConstructor;
 
@@ -32,6 +37,7 @@ public class RideController {
 
     private final RideService rideService;
     private final UserFeignClient userClient;
+    private final RideSearchAssistant rideSearchAssistant;
 
     @PostMapping
     public ResponseEntity<ApiResponse> publishRide(@RequestBody RideRequestDTO rideRequestDTO) {
@@ -46,11 +52,30 @@ public class RideController {
         List<RideResponseDTO> rides = rideService.searchRides(source, destination, searchDate);
         return ResponseEntity.ok(rides);
     }
+
+    @PostMapping("/assistant-search")
+    public ResponseEntity<NaturalLanguageRideSearchResponse> assistantSearch(
+            @Valid @RequestBody NaturalLanguageRideSearchRequest request) {
+        NaturalLanguageRideSearchResponse response = rideSearchAssistant.search(request.message());
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/getallrides")
     public ResponseEntity<List<RideResponseDTO>> GetallRides() {
         
         List<RideResponseDTO> rides = rideService.getallRides();
         return ResponseEntity.ok(rides);
+    }
+
+    @GetMapping("/admin")
+    public ResponseEntity<List<RideResponseDTO>> getRidesForAdmin() {
+        return ResponseEntity.ok(rideService.getallRides());
+    }
+
+    @DeleteMapping("/admin/{rideId}")
+    public ResponseEntity<Void> removeRideForAdmin(@PathVariable Long rideId) {
+        rideService.removeRide(rideId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{rideId}")

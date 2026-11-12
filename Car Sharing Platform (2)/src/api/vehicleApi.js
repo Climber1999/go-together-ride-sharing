@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from './baseUrl';
 
-const VEHICLE_API = ' http://localhost:5290/gotogether/vehicle';
+const VEHICLE_API = `${API_BASE_URL}/gotogether/vehicle`;
 
 // Get all vehicles
 export const getVehicles = () =>

@@ -1,7 +1,8 @@
 
 import axios from 'axios';
+import { API_BASE_URL } from '../api/baseUrl';
 
-const BASE_URL = 'http://localhost:9090/gotogether';
+const BASE_URL = `${API_BASE_URL}/gotogether`;
 
 // 1. REGISTER
 export const registerUser = (data) => axios.post(`${BASE_URL}/users/register`, data);

@@ -27,8 +27,8 @@ public class CorsPreflightFilter implements GlobalFilter, Ordered {
     private static final Set<String> ALLOWED_ORIGINS = Set.of(
         "http://localhost:3000",
         "http://localhost:3001",
-        "http://localhost:3000/",
-        "http://localhost:3001/"
+        "http://localhost:3000",
+        "http://localhost:3002"
     );
 
     private static final String ALLOWED_METHODS = "GET,POST,PUT,DELETE,OPTIONS,PATCH";

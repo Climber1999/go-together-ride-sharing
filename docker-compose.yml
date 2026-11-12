@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   # MySQL Database for all services
   mysql:
     image: mysql:8.0
     container_name: gotogether-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: gotogether
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-gotogether}
     ports:
       - "3307:3306"
     volumes:
@@ -16,10 +14,11 @@ services:
     networks:
       - gotogether-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 90s
 
   # Redis Cache
   redis:
@@ -57,24 +56,36 @@ services:
     networks:
       - gotogether-network
     healthcheck:
-      test: ["CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092"]
+      test: ["CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:29092"]
       interval: 10s
-      timeout: 10s
-      retries: 5
+      timeout: 30s
+      retries: 10
+      start_period: 60s
 
-  # Eureka Service Discovery (Optional - if you need it)
-  # eureka-server:
-  #   image: springcloud/eureka
-  #   container_name: gotogether-eureka
-  #   ports:
-  #     - "8761:8761"
-  #   networks:
-  #     - gotogether-network
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
+  # Eureka Service Discovery
+  eureka-server:
+    build:
+      context: ./server-1
+      dockerfile: Dockerfile
+    container_name: gotogether-eureka
+    environment:
+      SERVER_PORT: 8761
+      EUREKA_INSTANCE_HOSTNAME: eureka-server
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+      EUREKA_CLIENT_FETCH_REGISTRY: "false"
+      EUREKA_SERVER_ENABLE_SELF_PRESERVATION: "false"
+      EUREKA_SERVER_EVICTION_INTERVAL_TIMER_IN_MS: 15000
+    ports:
+      - "8761:8761"
+    networks:
+      - gotogether-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
 
   # User Service
   user-service:
@@ -86,15 +97,23 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gotogether?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root123
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
       SERVER_PORT: 8081
-      # Add your AWS S3 credentials here or use IAM roles
-      # AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      # AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      # AWS_REGION: ${AWS_REGION}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
+      MAPMYINDIA_API_KEY: ${MAPMYINDIA_API_KEY:-}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER:-}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY:-}
+      SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL:-noreply@gotogether.com}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_REGION: ${AWS_REGION:-eu-north-1}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:-gotogether-user-service}
     ports:
       - "8081:8081"
     depends_on:
@@ -104,6 +123,8 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     networks:
       - gotogether-network
     restart: unless-stopped
@@ -111,23 +132,29 @@ services:
   # Booking Service
   booking-service:
     build:
-      context: ./Booking
+      context: ./Booking-1
       dockerfile: Dockerfile
     container_name: gotogether-booking-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gotogether?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root123
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
+      RIDE_SERVICE_URL: http://ride-service:8083
+      USER_SERVICE_URL: http://user-service:8081
       SERVER_PORT: 8082
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
     ports:
       - "8082:8082"
     depends_on:
       mysql:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      eureka-server:
         condition: service_healthy
     networks:
       - gotogether-network
@@ -143,15 +170,20 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gotogether?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root123
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
+      USER_SERVICE_URL: http://user-service:8081
       SERVER_PORT: 8083
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
     ports:
       - "8083:8083"
     depends_on:
       mysql:
+        condition: service_healthy
+      eureka-server:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -169,7 +201,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8084
-      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=gotogether;User=root;Password=root123;"
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=gotogether;User=root;Password=${MYSQL_ROOT_PASSWORD:-root123};"
     ports:
       - "8084:8084"
     depends_on:
@@ -193,6 +225,8 @@ services:
       BOOKING_SERVICE_URL: http://booking-service:8082
       RIDE_SERVICE_URL: http://ride-service:8083
       VEHICLE_SERVICE_URL: http://vehicle-service:8084
+      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
     ports:
       - "8080:8080"
     depends_on:
@@ -200,6 +234,7 @@ services:
       - booking-service
       - ride-service
       - vehicle-service
+      - eureka-server
     networks:
       - gotogether-network
     restart: unless-stopped
@@ -209,6 +244,8 @@ services:
     build:
       context: ./Car Sharing Platform (2)
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
     container_name: gotogether-frontend
     environment:
       VITE_API_BASE_URL: http://localhost:8080

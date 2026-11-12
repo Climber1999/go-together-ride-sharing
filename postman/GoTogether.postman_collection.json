@@ -1,0 +1,799 @@
+{
+  "info": {
+    "_postman_id": "4c7236a7-6ed1-4f20-a8b4-5a7a5a951234",
+    "name": "GoTogether API",
+    "description": "Local API collection for the GoTogether gateway, user, booking, ride, vehicle, and Eureka services. Select the GoTogether Local environment before sending requests. IDs and credentials are configurable environment variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Platform",
+      "item": [
+        {
+          "name": "Gateway health",
+          "request": {
+            "method": "GET",
+            "url": "{{gatewayUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Eureka registry",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{eurekaUrl}}/eureka/apps"
+          }
+        },
+        {
+          "name": "Gateway route - users",
+          "request": {
+            "method": "GET",
+            "url": "{{gatewayUrl}}/gotogether/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Gateway route - bookings",
+          "request": {
+            "method": "GET",
+            "url": "{{gatewayUrl}}/gotogether/bookings"
+          }
+        },
+        {
+          "name": "Gateway route - rides",
+          "request": {
+            "method": "GET",
+            "url": "{{gatewayUrl}}/gotogether/rides/getallrides"
+          }
+        },
+        {
+          "name": "Gateway route - vehicles",
+          "request": {
+            "method": "GET",
+            "url": "{{gatewayUrl}}/gotogether/vehicle"
+          }
+        },
+        {
+          "name": "User service health",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Booking service health",
+          "request": {
+            "method": "GET",
+            "url": "{{bookingServiceUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Ride service health",
+          "request": {
+            "method": "GET",
+            "url": "{{rideServiceUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Vehicle Swagger UI",
+          "request": {
+            "method": "GET",
+            "url": "{{vehicleServiceUrl}}/swagger/index.html"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register passenger",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Rider\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"confirmPassword\": \"{{password}}\",\n  \"phoneNo\": \"{{phoneNo}}\",\n  \"role\": \"PASSENGER\",\n  \"paymentMethod\": \"CASH\"\n}"
+            },
+            "url": "{{userServiceUrl}}/gotogether/users/register"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{userServiceUrl}}/gotogether/users/login"
+          }
+        },
+        {
+          "name": "Refresh token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": "{{userServiceUrl}}/gotogether/users/refresh-token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{userServiceUrl}}/gotogether/users/logout"
+          }
+        },
+        {
+          "name": "Top-rated drivers",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/gotogether/users/top-rated"
+          }
+        },
+        {
+          "name": "Confirm email",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/gotogether/users/verify-email-confirm?token={{emailVerificationToken}}"
+          }
+        },
+        {
+          "name": "Get public compact user",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/gotogether/users/public/{{userId}}/compact"
+          }
+        },
+        {
+          "name": "Get public compact users by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[{{userId}}, {{driverId}}]"
+            },
+            "url": "{{userServiceUrl}}/gotogether/users/public/compact/batch"
+          }
+        },
+        {
+          "name": "Get all public compact users",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/gotogether/users/public/compact/all"
+          }
+        },
+        {
+          "name": "Get user profile",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Update user profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Rider\",\n  \"phone\": \"{{phoneNo}}\"\n}"
+            },
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Delete user account",
+          "request": {
+            "method": "DELETE",
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Change password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"{{password}}\",\n  \"newPassword\": \"{{newPassword}}\"\n}"
+            },
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}/password"
+          }
+        },
+        {
+          "name": "Revoke refresh token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}/revoke-token"
+          }
+        },
+        {
+          "name": "Send phone verification OTP",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}/verify-phone"
+          }
+        },
+        {
+          "name": "Send email verification",
+          "request": {
+            "method": "POST",
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}/verify-email"
+          }
+        },
+        {
+          "name": "Submit identity verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentType\": \"DRIVER_LICENSE\",\n  \"documentUrl\": \"https://example.com/identity-document.jpg\"\n}"
+            },
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}/verify-identity"
+          }
+        },
+        {
+          "name": "Upload profile image",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}/upload-image"
+          }
+        },
+        {
+          "name": "Get verification status",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}/verification-status"
+          }
+        },
+        {
+          "name": "Update user preferences",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"smokingAllowed\": false,\n  \"musicAllowed\": true,\n  \"talkingAllowed\": true\n}"
+            },
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}/preferences"
+          }
+        },
+        {
+          "name": "Verify phone OTP",
+          "request": {
+            "method": "POST",
+            "url": "{{userServiceUrl}}/gotogether/users/{{userId}}/verify-otp?otp={{otp}}"
+          }
+        },
+        {
+          "name": "Search place suggestions",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/api/places?address={{placeQuery}}"
+          }
+        },
+        {
+          "name": "Get place details",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/api/places/{{placeId}}"
+          }
+        },
+        {
+          "name": "User debug health",
+          "request": {
+            "method": "GET",
+            "url": "{{userServiceUrl}}/gotogether/debug/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rideId\": {{rideId}},\n  \"passengerId\": {{passengerId}},\n  \"passengerSeats\": 1,\n  \"pickupPoint\": \"{{pickupPoint}}\",\n  \"dropoffPoint\": \"{{dropoffPoint}}\",\n  \"totalAmount\": 25.00,\n  \"rideDate\": \"{{rideDate}}\"\n}"
+            },
+            "url": "{{bookingServiceUrl}}/gotogether/bookings"
+          }
+        },
+        {
+          "name": "List bookings",
+          "request": {
+            "method": "GET",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings"
+          }
+        },
+        {
+          "name": "Search bookings",
+          "request": {
+            "method": "GET",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/search?q={{searchQuery}}"
+          }
+        },
+        {
+          "name": "Get booking",
+          "request": {
+            "method": "GET",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/{{bookingId}}"
+          }
+        },
+        {
+          "name": "Replace booking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passengerSeats\": 1,\n  \"pickupPoint\": \"{{pickupPoint}}\",\n  \"dropoffPoint\": \"{{dropoffPoint}}\",\n  \"totalAmount\": 25.00,\n  \"rideDate\": \"{{rideDate}}\"\n}"
+            },
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/{{bookingId}}"
+          }
+        },
+        {
+          "name": "Partially update booking",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passengerSeats\": 1\n}"
+            },
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/{{bookingId}}"
+          }
+        },
+        {
+          "name": "Cancel booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Changed plans\"\n}"
+            },
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/{{bookingId}}/cancel"
+          }
+        },
+        {
+          "name": "Confirm booking",
+          "request": {
+            "method": "POST",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/{{bookingId}}/confirm"
+          }
+        },
+        {
+          "name": "Check in booking",
+          "request": {
+            "method": "POST",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/{{bookingId}}/checkin"
+          }
+        },
+        {
+          "name": "Check out booking",
+          "request": {
+            "method": "POST",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/{{bookingId}}/checkout"
+          }
+        },
+        {
+          "name": "List bookings by passenger",
+          "request": {
+            "method": "GET",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/user/{{passengerId}}"
+          }
+        },
+        {
+          "name": "List bookings by status",
+          "request": {
+            "method": "GET",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/status/{{bookingStatus}}"
+          }
+        },
+        {
+          "name": "Bulk update booking status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [{{bookingId}}],\n  \"status\": \"CANCELLED\"\n}"
+            },
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/status"
+          }
+        },
+        {
+          "name": "Bulk delete bookings",
+          "request": {
+            "method": "DELETE",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings?ids={{bookingId}}"
+          }
+        },
+        {
+          "name": "Export bookings",
+          "request": {
+            "method": "GET",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/export?format=csv"
+          }
+        },
+        {
+          "name": "Import bookings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"rideId\": {{rideId}},\n    \"passengerId\": {{passengerId}},\n    \"passengerSeats\": 1,\n    \"pickupPoint\": \"{{pickupPoint}}\",\n    \"dropoffPoint\": \"{{dropoffPoint}}\",\n    \"totalAmount\": 25.00,\n    \"rideDate\": \"{{rideDate}}\"\n  }\n]"
+            },
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/import"
+          }
+        },
+        {
+          "name": "Booking controller health",
+          "request": {
+            "method": "GET",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/health"
+          }
+        },
+        {
+          "name": "Delete booking",
+          "request": {
+            "method": "DELETE",
+            "url": "{{bookingServiceUrl}}/gotogether/bookings/{{bookingId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rides",
+      "item": [
+        {
+          "name": "Publish ride",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driverId\": {{driverId}},\n  \"vehicleId\": {{vehicleId}},\n  \"source\": \"{{source}}\",\n  \"destination\": \"{{destination}}\",\n  \"departureTime\": \"{{departureTime}}\",\n  \"arrivalTime\": \"{{arrivalTime}}\",\n  \"farePerSeat\": 25.0,\n  \"totalSeats\": 3,\n  \"Description\": \"Ride published from Postman\",\n  \"airConditioning\": true,\n  \"chatty\": \"friendly\",\n  \"wifi\": false,\n  \"music1\": false,\n  \"phoneCharger\": true,\n  \"music\": false,\n  \"smoking\": false,\n  \"pets\": false,\n  \"termsAccepted\": true,\n  \"insuranceUnderstood\": true,\n  \"safetyGuidelines\": true,\n  \"PickupPoints\": [\"{{pickupPoint}}\"],\n  \"dropoffPoints\": [\"{{dropoffPoint}}\"]\n}"
+            },
+            "url": "{{rideServiceUrl}}/gotogether/rides"
+          }
+        },
+        {
+          "name": "Search rides",
+          "request": {
+            "method": "GET",
+            "url": "{{rideServiceUrl}}/gotogether/rides?source={{source}}&destination={{destination}}&date={{rideDate}}"
+          }
+        },
+        {
+          "name": "Natural-language ride search",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Find a ride from {{source}} to {{destination}} on {{rideDate}}\"\n}"
+            },
+            "url": "{{rideServiceUrl}}/gotogether/rides/assistant-search"
+          }
+        },
+        {
+          "name": "List all rides",
+          "request": {
+            "method": "GET",
+            "url": "{{rideServiceUrl}}/gotogether/rides/getallrides"
+          }
+        },
+        {
+          "name": "Get ride",
+          "request": {
+            "method": "GET",
+            "url": "{{rideServiceUrl}}/gotogether/rides/{{rideId}}"
+          }
+        },
+        {
+          "name": "Update ride",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driverId\": {{driverId}},\n  \"vehicleId\": {{vehicleId}},\n  \"source\": \"{{source}}\",\n  \"destination\": \"{{destination}}\",\n  \"departureTime\": \"{{departureTime}}\",\n  \"arrivalTime\": \"{{arrivalTime}}\",\n  \"farePerSeat\": 25.0,\n  \"totalSeats\": 3,\n  \"Description\": \"Updated via Postman\",\n  \"termsAccepted\": true,\n  \"insuranceUnderstood\": true,\n  \"safetyGuidelines\": true\n}"
+            },
+            "url": "{{rideServiceUrl}}/gotogether/rides/{{rideId}}"
+          }
+        },
+        {
+          "name": "Cancel ride",
+          "request": {
+            "method": "DELETE",
+            "url": "{{rideServiceUrl}}/gotogether/rides/{{rideId}}"
+          }
+        },
+        {
+          "name": "List rides by driver",
+          "request": {
+            "method": "GET",
+            "url": "{{rideServiceUrl}}/gotogether/rides/driver/{{driverId}}"
+          }
+        },
+        {
+          "name": "Update ride seats",
+          "request": {
+            "method": "PUT",
+            "url": "{{rideServiceUrl}}/gotogether/rides/{{rideId}}/seats?action={{seatAction}}"
+          }
+        },
+        {
+          "name": "Book ride seats",
+          "request": {
+            "method": "GET",
+            "url": "{{rideServiceUrl}}/gotogether/rides/{{rideId}}/updateseat?seat={{seats}}"
+          }
+        },
+        {
+          "name": "Restore seats after cancellation",
+          "request": {
+            "method": "GET",
+            "url": "{{rideServiceUrl}}/gotogether/rides/{{rideId}}/updateseataftercancel?seat={{seats}}"
+          }
+        },
+        {
+          "name": "Get compact user from user service",
+          "request": {
+            "method": "GET",
+            "url": "{{rideServiceUrl}}/gotogether/rides/users/{{userId}}/compact"
+          }
+        },
+        {
+          "name": "Get compact users from user service",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[{{userId}}, {{driverId}}]"
+            },
+            "url": "{{rideServiceUrl}}/gotogether/rides/users/compact"
+          }
+        },
+        {
+          "name": "Get all compact users from user service",
+          "request": {
+            "method": "GET",
+            "url": "{{rideServiceUrl}}/gotogether/rides/users/compact/all"
+          }
+        },
+        {
+          "name": "Send Kafka test message",
+          "request": {
+            "method": "GET",
+            "url": "{{rideServiceUrl}}/api/kafka/test"
+          }
+        },
+        {
+          "name": "Send Kafka message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Postman test message\",\n  \"rideId\": {{rideId}},\n  \"eventType\": \"TEST\"\n}"
+            },
+            "url": "{{rideServiceUrl}}/api/kafka/send"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vehicles",
+      "item": [
+        {
+          "name": "List vehicles",
+          "request": {
+            "method": "GET",
+            "url": "{{vehicleServiceUrl}}/gotogether/vehicle"
+          }
+        },
+        {
+          "name": "List vehicles by driver",
+          "request": {
+            "method": "GET",
+            "url": "{{vehicleServiceUrl}}/gotogether/vehicle/driver/{{driverId}}"
+          }
+        },
+        {
+          "name": "Get vehicle",
+          "request": {
+            "method": "GET",
+            "url": "{{vehicleServiceUrl}}/gotogether/vehicle/{{vehicleId}}"
+          }
+        },
+        {
+          "name": "Add vehicle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicle_Id\": 0,\n  \"driverId\": {{driverId}},\n  \"make\": \"Honda\",\n  \"model\": \"City\",\n  \"plateNumber\": \"{{plateNumber}}\",\n  \"color\": \"White\",\n  \"capacity\": 4\n}"
+            },
+            "url": "{{vehicleServiceUrl}}/gotogether/vehicle"
+          }
+        },
+        {
+          "name": "Update vehicle",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicle_Id\": {{vehicleId}},\n  \"driverId\": {{driverId}},\n  \"make\": \"Honda\",\n  \"model\": \"City\",\n  \"plateNumber\": \"{{plateNumber}}\",\n  \"color\": \"White\",\n  \"capacity\": 4\n}"
+            },
+            "url": "{{vehicleServiceUrl}}/gotogether/vehicle/{{vehicleId}}"
+          }
+        },
+        {
+          "name": "Delete vehicle",
+          "request": {
+            "method": "DELETE",
+            "url": "{{vehicleServiceUrl}}/gotogether/vehicle/{{vehicleId}}"
+          }
+        }
+      ]
+    }
+  ]
+}

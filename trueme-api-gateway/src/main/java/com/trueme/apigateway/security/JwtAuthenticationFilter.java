@@ -4,6 +4,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
@@ -30,12 +31,12 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         log.info("Gateway request received: {}", path);
 
         // Public endpoints
-        if (path.startsWith("/gotogether/users") ||
+        if ((HttpMethod.GET.equals(request.getMethod()) && "/gotogether/rides".equals(path)) ||
+            path.startsWith("/gotogether/users") ||
             path.startsWith("/swagger-ui") ||
             path.startsWith("/v3/api-docs" )||
             path.startsWith("/gotogether/rides/users/compact/all")
             || path.startsWith("/gotogether/rides/getallrides")
-            || path.startsWith("/gotogether/rides/**")
             || path.startsWith("/api/places")) {
 
             return chain.filter(exchange);

@@ -1,6 +1,7 @@
 package com.gotogether.user.config;
 
 import com.gotogether.user.filter.JwtAuthenticationFilter;
+import com.gotogether.user.repository.UserRepository;
 import com.gotogether.user.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,10 +26,11 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider);
+        return new JwtAuthenticationFilter(jwtTokenProvider, userRepository);
     }
 
     @Bean
@@ -60,6 +62,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 // Public endpoints - no authentication required
                 // Order matters: more specific patterns first!
+                .requestMatchers("/gotogether/users/admin/**").hasRole("ADMIN")
                 .requestMatchers("/gotogether/users/login").permitAll()
                 .requestMatchers("/gotogether/users/**").permitAll()
                 .requestMatchers("/gotogether/users/register").permitAll()

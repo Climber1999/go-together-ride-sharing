@@ -88,9 +88,6 @@ public class RideServiceImpl implements RideService {
             throw new ResourceNotFoundException("Driver ID is missing");
         }
         List<Ride> rides = rideRepository.findByDriverId(driverId);
-        if (rides.isEmpty()) {
-            throw new ResourceNotFoundException("No rides found for the driver");
-        }
         return rides.stream()
                     .map(ride -> modelMapper.map(ride, RideResponseDTO.class))
                     .collect(Collectors.toList());
@@ -126,14 +123,19 @@ public class RideServiceImpl implements RideService {
 	@Override
 	public List<RideResponseDTO> getallRides() {
 		List<Ride> rides = rideRepository.findAll();
-		if (rides.isEmpty()) {
-			throw new ResourceNotFoundException("No rides found");
-		}
 		return rides.stream()
 					.map(ride -> modelMapper.map(ride, RideResponseDTO.class))
 					.collect(Collectors.toList());
 		
 	}
+
+    @Override
+    public void removeRide(Long rideId) {
+        if (!rideRepository.existsById(rideId)) {
+            throw new ResourceNotFoundException("Ride not found");
+        }
+        rideRepository.deleteById(rideId);
+    }
 
     @Override
     public ApiResponse updateSeatsAfterBooking(Long rideId, int seats) {

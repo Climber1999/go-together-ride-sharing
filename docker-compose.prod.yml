@@ -1,8 +1,6 @@
 # Production Docker Compose Override
 # Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
 
-version: '3.8'
-
 services:
   # Production MySQL with persistent storage and security
   mysql:

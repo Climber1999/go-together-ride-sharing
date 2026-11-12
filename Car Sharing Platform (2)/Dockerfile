@@ -8,6 +8,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
+# Set the API base URL at build time for the selected environment.
+ARG VITE_API_BASE_URL=http://localhost:8080
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # Copy source code
 COPY . .
 
@@ -22,7 +26,7 @@ RUN addgroup -g 1001 -S appuser && \
     adduser -u 1001 -S appuser -G appuser
 
 # Copy built assets from build stage
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf

@@ -7,7 +7,7 @@ Complete guide for running your GoTogether microservices platform using Docker.
 - **Docker Desktop** installed and running
 - **Docker Compose** (comes with Docker Desktop)
 - At least **8GB RAM** available for Docker
-- Ports available: `3307` (MySQL), `6379`, `8080-8084`, `9093` (Kafka), `2181`
+- Ports available: `3307` (MySQL), `6379` (Redis), `8080-8084` (APIs), `8761` (Eureka), `9093` (Kafka)
 
 ## 🚀 Quick Start
 
@@ -42,9 +42,10 @@ docker-compose up -d --build
 ```
 
 This will start:
-- ✅ **MySQL** (port 3306) - Database
+- ✅ **MySQL** (container port 3306, host port 3307) - Database
 - ✅ **Redis** (port 6379) - Cache
-- ✅ **Kafka + Zookeeper** (port 9092) - Message broker
+- ✅ **Kafka** (host port 9093) - Message broker
+- ✅ **Eureka** (port 8761) - Service discovery
 - ✅ **User Service** (port 8081)
 - ✅ **Booking Service** (port 8082)
 - ✅ **Ride Service** (port 8083)
@@ -58,6 +59,7 @@ Once all services are running:
 
 - **Frontend**: http://localhost
 - **API Gateway**: http://localhost:8080
+- **Eureka Dashboard**: http://localhost:8761
 - **User Service**: http://localhost:8081
 - **Booking Service**: http://localhost:8082
 - **Ride Service**: http://localhost:8083
@@ -280,8 +282,8 @@ docker-compose up -d mysql
        ┌──────────────────────────────────┤
        │                                  │
     Redis (:6379)                    Kafka (:9092)
-                                          │
-                                     Zookeeper (:2181)
+
+    Eureka (:8761) provides service discovery
 ```
 
 ---
@@ -294,7 +296,7 @@ If you prefer to run services individually:
 
 ```powershell
 # Build Booking Service
-cd C:\Users\durve\Downloads\PROJECT\Booking
+cd C:\Users\durve\Downloads\PROJECT\Booking-1
 docker build -t gotogether-booking:latest .
 
 # Build Ride Service

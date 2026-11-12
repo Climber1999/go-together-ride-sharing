@@ -6,6 +6,8 @@ import java.util.Map;
 import com.gotogether.booking.dto.*;
 import com.gotogether.booking.exception.ResourceNotFoundException;
 import com.gotogether.booking.service.BookingService;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,26 @@ public class Controller {
             return ResponseEntity.ok(bookingService.searchBookings(q));
         }
         return ResponseEntity.ok(bookingService.getAllBookings());
+    }
+
+    @GetMapping("/admin")
+    public ResponseEntity<List<BookingResponseDTO>> getBookingsForAdmin() {
+        return ResponseEntity.ok(bookingService.getAllBookings());
+    }
+
+    @GetMapping("/rides/{rideId}/passengers")
+    public ResponseEntity<List<RidePassengerDTO>> getRidePassengers(
+            @PathVariable Long rideId,
+            @AuthenticationPrincipal Jwt jwt) {
+        Number userIdClaim = jwt.getClaim("userId");
+        Long callerUserId = userIdClaim.longValue();
+        boolean admin = "ADMIN".equals(jwt.getClaimAsString("role"));
+        return ResponseEntity.ok(bookingService.getRidePassengers(rideId, callerUserId, admin));
+    }
+
+    @PostMapping("/admin/{id}/cancel")
+    public ResponseEntity<BookingResponseDTO> cancelBookingForAdmin(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.cancelBooking(id, "Cancelled by administrator"));
     }
 
     // Get single booking by id
@@ -88,8 +110,13 @@ public class Controller {
     }
 
     @PostMapping("/{id}/confirm")
-    public ResponseEntity<BookingResponseDTO> confirmBooking(@PathVariable Long id) {
-        return ResponseEntity.ok(bookingService.confirmBooking(id));
+    public ResponseEntity<BookingResponseDTO> confirmBooking(
+            @PathVariable Long id,
+            @AuthenticationPrincipal Jwt jwt) {
+        Number userIdClaim = jwt.getClaim("userId");
+        Long callerUserId = userIdClaim.longValue();
+        boolean admin = "ADMIN".equals(jwt.getClaimAsString("role"));
+        return ResponseEntity.ok(bookingService.confirmBooking(id, callerUserId, admin));
     }
 
     @PostMapping("/{id}/checkin")

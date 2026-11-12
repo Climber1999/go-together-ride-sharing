@@ -26,8 +26,8 @@ public class CorsResponseFilter implements GlobalFilter, Ordered {
     private static final Set<String> ALLOWED_ORIGINS = Set.of(
         "http://localhost:3000",
         "http://localhost:3001",
-        "http://localhost:3000/",
-        "http://localhost:3001/"
+        "http://localhost:3000",
+        "http://localhost:3002"
     );
 
     @Override
